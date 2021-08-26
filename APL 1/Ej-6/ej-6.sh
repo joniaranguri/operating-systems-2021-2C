@@ -33,6 +33,6 @@
 # Se validan los parámetros que recibe el script                                        Obligatorio
 # El script ofrece ayuda con -h, -? o -help explicando cómo se lo debe invocar          Obligatorio
 # Funciona correctamente según enunciado                                                Obligatorio
-# Se implementan funciones Deseable
+# Se implementan funciones                                                              Deseable
 
 ################ MAIN ####################

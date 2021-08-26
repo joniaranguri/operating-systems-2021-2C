@@ -61,6 +61,6 @@
 # El script ofrece ayuda con -h, -? o -help explicando cómo se lo debe invocar          Obligatorio
 # Funciona con rutas relativas, absolutas o con espacios                                Obligatorio
 # Se adjuntan archivos de prueba por parte del grupo                                    Obligatorio
-# Se implementan funciones Deseable
+# Se implementan funciones                                                              Deseable
 
 ################ MAIN ####################

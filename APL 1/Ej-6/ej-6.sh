@@ -36,3 +36,73 @@
 # Se implementan funciones                                                              Deseable
 
 ################ MAIN ####################
+
+function suma()
+{
+    # suma=$(( $1 + $2 ))
+    # echo "$1 + $2 = $suma"
+    echo "scale=3; $1+$2" | bc -l
+}
+
+function resta()
+{
+    # resta=$(( $1 - $2 ))
+    # echo "$1 - $2 = $resta"
+    echo "scale=3; $1-$2" | bc -l
+}
+
+function multiplicacion()
+{
+    # multiplicacion=$(( $1 * $2 ))
+    # echo "$1 * $2 = $multiplicacion"
+    echo "scale=3; $1*$2" | bc -l
+}
+
+function division()
+{
+    if [ "$2" -ne 0 ]; then
+        # division=$(( $1 / $2 ))
+        # echo "$1 / $2 = $division"
+        echo "scale=3; $1/$2" | bc -l
+    else 
+        echo "Division by 0 is not allowed"
+    fi
+}
+
+magenta="\x1b[35m";
+reset="\x1b[0m";
+
+function help()
+{
+    printf "\nHelp menu... usage:\n===================\n"
+    printf "bash $0 -n1 $magenta<NUMERO>$reset -n2 $magenta<NUMERO>$reset [ -suma | -resta | -multiplicacion | -division ]\n\n"
+    printf "Only one operation at a time is allowed.\n\n"
+}
+
+if [ "$#" -ne 5 ] || [ "$1" != "-n1" ] || [ "$3" != "-n2" ]; then
+    help
+    exit
+fi
+
+case $5 in
+
+  "-suma")
+    suma $2 $4
+    ;;
+
+  "-resta")
+    resta $2 $4
+    ;;
+
+  "-multiplicacion")
+    multiplicacion $2 $4
+    ;;
+
+  "-division")
+    division $2 $4
+    ;;
+
+  *)
+    help
+    ;;
+esac

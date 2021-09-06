@@ -84,6 +84,21 @@ if [ "$#" -ne 5 ] || [ "$1" != "-n1" ] || [ "$3" != "-n2" ]; then
     exit
 fi
 
+re_int='^[0-9]+$'
+re_float='^[+-]?[0-9]+\.?[0-9]*$'
+
+if ! [[ $2 =~ $re_int ]] && ! [[ $2 =~ $re_float ]] ; then
+   echo "error: $1 is not a number" >&2; exit 1
+fi
+
+if ! [[ $4 =~ $re_int ]] && ! [[ $4 =~ $re_float ]] ; then
+   echo "error: $3 is not a number" >&2; exit 1
+fi
+
+if [ "$1" == "-h" ]
+    help # Redundant behaviour.
+fi
+
 case $5 in
 
   "-suma")

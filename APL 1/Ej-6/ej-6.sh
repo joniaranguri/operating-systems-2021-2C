@@ -61,7 +61,7 @@ function multiplicacion()
 
 function division()
 {
-    if [ "$2" -ne 0 ]; then
+    if [ $(echo "0 < $2"|bc -l) -eq 1 ] || [ $(echo "$2 < 0"|bc -l) -eq 1 ]; then
         # division=$(( $1 / $2 ))
         # echo "$1 / $2 = $division"
         echo "scale=3; $1/$2" | bc -l

@@ -3,7 +3,8 @@
 # APL N1 Ejercicio 6 (Primer entrega)
 # Script: ej-6.sh
 # Integrantes:
-# ARANGURI JONATHAN ENRIQUE         40.672.991	
+# ARANGURI JONATHAN ENRIQUE         40.672.991
+# CASTILLO ABAD AGUSTIN             40.254.434	
 # MIRANDA SERGIO JAVIER             35.634.266
 # NOGUEIRA AKIKI LUCAS ESTEBAN      39.001.387
 
@@ -60,7 +61,7 @@ function multiplicacion()
 
 function division()
 {
-    if [ "$2" -ne 0 ]; then
+    if [ $(echo "$2 != 0"|bc -l) -eq 1 ]; then
         # division=$(( $1 / $2 ))
         # echo "$1 / $2 = $division"
         echo "scale=3; $1/$2" | bc -l
@@ -95,7 +96,7 @@ if ! [[ $4 =~ $re_int ]] && ! [[ $4 =~ $re_float ]] ; then
    echo "error: $3 is not a number" >&2; exit 1
 fi
 
-if [ "$1" == "-h" ]
+if [ "$1" == "-h" ] ; then
     help # Redundant behaviour.
 fi
 

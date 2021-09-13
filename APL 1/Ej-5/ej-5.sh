@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/bin/bash
 
 # APL N1 Ejercicio 5 (Primer entrega)
 # Script: ej-5.sh

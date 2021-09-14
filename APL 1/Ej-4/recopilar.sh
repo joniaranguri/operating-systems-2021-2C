@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/bin/bash
 
 # APL N1 Ejercicio 4 (Primer entrega)
 # Script: recopilar.sh

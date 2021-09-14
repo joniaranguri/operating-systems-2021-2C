@@ -90,7 +90,7 @@ function createZipFile() {
     fi
     for file in "${LIST_OF_FILES[@]}"; do
         showWarningMessage "Deleting file "$file""
-        #rm "$file"
+        rm "$file"
      done    
 }
 

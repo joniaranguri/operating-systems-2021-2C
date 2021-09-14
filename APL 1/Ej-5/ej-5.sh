@@ -83,12 +83,15 @@ function createZipFile() {
     baseParentName="$(basename "$parentdir")"
     timestamp=$(date +"%Y%m%d%H%M%S")       
     outputName="$1/logs_${baseParentName}_${timestamp}.zip"
-    LIST_OF_FILES=($(find "$2" -type f | egrep -i '.*(\.info|\.txt|\.log)' 2>/dev/null))
-    $(find "$2" -type f | egrep -i '.*(\.info|\.txt|\.log)' | zip "$outputName" -@ &>/dev/null) 
+    LIST_OF_FILES=($(find "$2" -type f ! -newerBt $(date +"%Y-%m-%d") | egrep -i '.*(\.info|\.txt|\.log)'))
+    $(find "$2" -type f ! -newerBt $(date +"%Y-%m-%d")  | egrep -i '.*(\.info|\.txt|\.log)' | zip "$outputName" -@ &>/dev/null)
+    if [ "$?" -eq 0 ]; then
+        zipFiles+=("$outputName")
+    fi
     for file in "${LIST_OF_FILES[@]}"; do
         showWarningMessage "Deleting file "$file""
-        rm "$file"
-    done    
+        #rm "$file"
+     done    
 }
 
 function validateDirectory() {
@@ -114,11 +117,11 @@ function showWarningMessage() {
 }
 
 function showHelp() {
-showWarningMessage "The script receives the following input parameter:"
-showMessage "• file: The configuration file which contains info to create the zip files"
-showWarningMessage "Invocation example:"
-showMessage "• ./ej-5.sh /someDirectory/configFile.conf "
-exit
+    showWarningMessage "The script receives the following input parameter:"
+    showMessage "• file: The configuration file which contains info to create the zip files"
+    showWarningMessage "Invocation example:"
+    showMessage "• ./ej-5.sh /someDirectory/configFile.conf "
+    exit
 }
 
 function wrongParameters() {
@@ -130,10 +133,13 @@ function wrongParameters() {
 }
 
 function main() {
-validateParameters $# $1
-processFile $1
-showMessage "The process have been finished successfully"
+    validateParameters "$#" "$1"
+    echo  " "
+    showMessage "The process have been finished successfully!"
+    showMessage "The following zip files were generated: "
+    showMessage "${zipFiles[*]}"
 }
 
 NC='\033[0m'
-main $@
+declare -a zipFiles=()
+main "$@"

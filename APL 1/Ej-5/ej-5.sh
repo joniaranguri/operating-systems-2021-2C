@@ -136,8 +136,12 @@ function main() {
     validateParameters "$#" "$1"
     echo  " "
     showMessage "The process have been finished successfully!"
+    if [ "${#zipFiles[*]}" -eq 0 ]; then
+    showMessage "No file has been generated."
+    else
     showMessage "The following zip files were generated: "
     showMessage "${zipFiles[*]}"
+    fi
 }
 
 NC='\033[0m'

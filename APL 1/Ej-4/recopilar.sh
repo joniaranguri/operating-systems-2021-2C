@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 
 # APL N1 Ejercicio 4 (Primer entrega)
 # Script: recopilar.sh
@@ -189,12 +189,12 @@ function wrongParameters() {
 }
 
 function main() {
-validateParameters $# $1 $2 $3 $4 $5 $6
-processFiles $# $2 $4 $6
+validateParameters "$#" "$1" "$2" "$3" "$4" "$5" "$6"
+processFiles "$#" "$2" "$4" "$6"
 showMessage "The file 'salida.json' was generated successful"
 }
 
 NC='\033[0m'
 
 declare -A products
-main $@
+main "$@"

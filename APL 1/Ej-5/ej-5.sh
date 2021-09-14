@@ -83,9 +83,10 @@ function createZipFile() {
     baseParentName="$(basename "$parentdir")"
     timestamp=$(date +"%Y%m%d%H%M%S")       
     outputName="$1/logs_${baseParentName}_${timestamp}.zip"
-    LIST_OF_FILES="$(find "$2" -type f | egrep -i '.*(\.info|\.txt|\.log)' 2>/dev/null)"
+    LIST_OF_FILES=($(find "$2" -type f | egrep -i '.*(\.info|\.txt|\.log)' 2>/dev/null))
     $(find "$2" -type f | egrep -i '.*(\.info|\.txt|\.log)' | zip "$outputName" -@ &>/dev/null) 
     for file in "${LIST_OF_FILES[@]}"; do
+        showWarningMessage "Deleting file "$file""
         rm "$file"
     done    
 }

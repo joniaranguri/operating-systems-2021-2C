@@ -4,7 +4,7 @@
 # Script: ej-2.sh
 # Integrantes:
 # ARANGURI JONATHAN ENRIQUE         40.672.991	
-# MIRANDA SERGIO JAVIER             35.634.266
+# CASTILLO ABAD AGUSTIN             40.254.434
 # NOGUEIRA AKIKI LUCAS ESTEBAN      39.001.387
 
 ################ ENUNCIADO ####################
@@ -48,9 +48,12 @@ echo "Para la ejecución correcta del programa, debe ingresar los siguientes par
 echo ""
 echo "--path o -p 'directorio' - Para indicar en que directorio desea que los nombres de las fotografias sean editados."
 echo ""
+echo "--dia o -d 'dia de la semana' - Para indicar que los archivos que correspondan a ese día de la semana no sean modificados."
+echo ""
 echo "--help o -h - Para ver este instructivo."
 echo ""
 echo "Ejemplo de ejecucion: ./ej2.sh -p primer carpeta"
+echo "Ejemplo de ejecucion: ./ej2.sh -p primer carpeta -d lunes"
 }
 
 
@@ -101,20 +104,47 @@ changeName(){
 				food="cena"
 			fi
 		
-
-			mv $photo $dir/$newDate\ $food\ del\ $dayName.$ext
+            if [ $dayToExclude != $dayName ];then
+			    mv $photo $dir/$newDate\ $food\ del\ $dayName.$ext
+            fi
         fi
     done
-
 }
 
 ################# PARAMETROS
 
+dayToExclude="NULL"
 
 if [ $# -eq 2 -a \( "$1" = "--path" -o "$1" = "-p" \) ];then #VALIDA SI EL USUARIO INGRESA EL PARAMETRO --path O -p
     if [ -d "$2" ];then
         directory=$2
         changeName
+    else
+        echo "ERROR: El parametro ingresado no es un directorio."
+        exit 1
+    fi
+    exit 1
+elif [ $# -eq 4 -a \( "$1" = "--path" -o "$1" = "-p" \) ];then
+    if [ -d "$2" ];then
+        directory=$2
+        if [ $# -eq 4 -a \( "$3" = "--dia" -o "$3" = "-d" \) ];then
+            declare -a week_days
+            week_days="lunes martes miercoles jueves viernes sabado domingo"
+            for weekDay in $week_days
+            do
+                if [ "${4,,}" = "${weekDay,,}" ]; then
+                    dayToExclude=$weekDay
+                    changeName
+                    exit 1
+                fi
+            done
+
+            echo "ERROR: El parametro ingresado no es un día de la semana"
+            exit 1
+        else
+            echo "ERROR: No se ingresaron los parametros correctamente. Para más información sobre la ejecución del programa utilice el comando -h ."
+            exit 1
+        fi
     else
         echo "ERROR: El parametro ingresado no es un directorio."
         exit 1

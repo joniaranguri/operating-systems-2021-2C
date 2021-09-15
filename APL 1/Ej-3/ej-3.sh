@@ -38,3 +38,84 @@
 # No requiere de dos archivos de script distintos para ejecutar                         Deseable
 
 ################ MAIN ####################
+
+doCommands() {
+
+	while [ 1 ]
+	do 
+		bash ./../Ej-2/ej-2.sh "$@" 
+		sleep 2
+	done
+}
+
+killDaemon()
+{
+	pid=$(<.pid_memory)
+	
+	if [ "$pid" != "" ]
+	then 
+		kill $pid
+		echo "Daemon Killed $pid"
+		echo "" > ./.pid_memory
+	else
+		echo "No daemon found."
+	fi
+
+	exit 1
+}
+
+help()
+{
+	echo "./script.sh --path /home/usuario/fotos-comidas"
+	echo "./script.sh -p fotos-comidas --dia domingo"
+}
+
+validateParams()
+{
+	if [[ "-k" == "$*" ]];
+	then
+		if [ $# -eq 1 ];
+		then
+			killDaemon
+		else
+			echo "ERROR: you can't use param -k with other params (no.params: $#)"
+			exit 0;
+		fi
+	fi
+
+	response=$(bash ./../Ej-2/ej-2.sh "$@")
+
+	#########################################
+	# We reused validations of ej-2.sh		#
+	# If it fails, daemon does not start	#
+	#########################################
+
+	if [[ "$response" == *"ERROR"* ]];
+	then
+		echo $response		
+	else 
+		implementDaemon "$@"
+	fi
+}
+
+implementDaemon()
+{
+	###############################
+	# Magic Daemon Implementation #
+	###############################
+
+	pid=$(<.pid_memory)
+
+	if [ "$pid" == "" ]
+	then
+		doCommands "$@" 0<&- &>/dev/null &
+		echo $! > ./.pid_memory # Saves last executed command PID in a file
+
+		pid=$(<.pid_memory)
+		echo "Daemon Started with pid: $pid"
+	else
+		echo "Only one instance of the daemon is allowed! (Running daemon pid: $pid)"
+	fi
+}
+
+validateParams "$@"

@@ -48,3 +48,102 @@
 # Se implementan funciones                                                              Deseable
 
 ################ MAIN ####################
+function validateParameters() {
+    if [ $1 -ne 1 ]; then
+        wrongParameters
+    fi
+    if [ "$2" != "-h" -a "$2" != "-?" -a "$2" != "-help" ]; then
+        if [ -f "$2" -a -r "$2" ]; then
+            processFile "$2"
+        else
+            showError "You don't have access to the file "$2" or is not a file"
+        fi
+    else
+        showHelp
+    fi
+    
+}
+
+function processFile() {
+IFS_backup=$IFS
+IFS=$'\n'
+    firstLine=$(head -n 1 "$1")
+    validateDirectory "$firstLine"
+ for line in $(cat "$1" | tail -n +2)
+    do
+    if [[ ! -d "$line" || ! -r "$line" ]]; then   
+    showWarningMessage "You do not have permission or "$line" is not a directory .. skipping file .."
+    fi
+    createZipFile "$firstLine" "$line"
+    done
+}
+
+function createZipFile() {
+    parentdir="$(dirname "$2")"    
+    baseParentName="$(basename "$parentdir")"
+    timestamp=$(date +"%Y%m%d%H%M%S")       
+    outputName="$1/logs_${baseParentName}_${timestamp}.zip"
+    LIST_OF_FILES=($(find "$2" -type f ! -newerBt $(date +"%Y-%m-%d") | egrep -i '.*(\.info|\.txt|\.log)'))
+    $(find "$2" -type f ! -newerBt $(date +"%Y-%m-%d")  | egrep -i '.*(\.info|\.txt|\.log)' | zip "$outputName" -@ &>/dev/null)
+    if [ "$?" -eq 0 ]; then
+        zipFiles+=("$outputName")
+    fi
+    for file in "${LIST_OF_FILES[@]}"; do
+        showWarningMessage "Deleting file "$file""
+        rm "$file"
+     done    
+}
+
+function validateDirectory() {
+    if [[ ! -d "$1" || ! -r "$1" ]]; then
+    showError "You do not have permission or "$1" is not a directory"
+    fi
+}
+
+function showError() {
+    RED='\033[0;31m'
+    echo -e "${RED}  $1 ${NC}"
+    exit
+}
+
+function showMessage() {
+    GREEN='\033[0;32m'
+    echo -e "${GREEN}  $1 ${NC}"
+}
+
+function showWarningMessage() {
+    YELLOW='\033[1;33m'
+    echo -e "${YELLOW}  $1 ${NC}"
+}
+
+function showHelp() {
+    showWarningMessage "The script receives the following input parameter:"
+    showMessage "• file: The configuration file which contains info to create the zip files"
+    showWarningMessage "Invocation example:"
+    showMessage "• ./ej-5.sh /someDirectory/configFile.conf "
+    exit
+}
+
+function wrongParameters() {
+    showWarningMessage "Wrong parameters. You can check the help with the next sintaxis:"
+    showMessage "  ./ej-5.sh -?"
+    showMessage "  ./ej-5.sh -h"
+    showMessage "  ./ej-5.sh -help"
+    exit
+}
+
+function main() {
+    validateParameters "$#" "$1"
+    echo  " "
+    showMessage "The process have been finished successfully!"
+    if [ "${#zipFiles[*]}" -eq 0 ]; then
+    showMessage "No file has been generated."
+    else
+    showMessage "The following zip files were generated: "
+    showMessage "${zipFiles[*]}"
+    fi
+}
+
+NC='\033[0m'
+declare -a zipFiles=()
+main "$@"

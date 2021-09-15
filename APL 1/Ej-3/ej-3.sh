@@ -86,8 +86,8 @@ validateParams()
 	response=$(bash ./../Ej-2/ej-2.sh "$@")
 
 	#########################################
-	# We reused validations of ej-2.sh		#
-	# If it fails, daemon does not start	#
+	# We reused validations of ej-2.sh      #
+	# If it fails, daemon does not start    #
 	#########################################
 
 	if [[ "$response" == *"ERROR"* ]];
@@ -119,3 +119,4 @@ implementDaemon()
 }
 
 validateParams "$@"
+

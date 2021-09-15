@@ -116,7 +116,7 @@ changeName(){
 dayToExclude="NULL"
 
 if [ $# -eq 2 -a \( "$1" = "--path" -o "$1" = "-p" \) ];then #VALIDA SI EL USUARIO INGRESA EL PARAMETRO --path O -p
-    if [ -d "$2" ];then
+    if [ -d "$2" -a -r "$2" ];then
         directory=$2
         changeName
     else

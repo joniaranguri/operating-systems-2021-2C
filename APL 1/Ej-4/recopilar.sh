@@ -3,9 +3,9 @@
 # APL N1 Ejercicio 4 (Primer entrega)
 # Script: recopilar.sh
 # Integrantes:
-# ARANGURI JONATHAN ENRIQUE         40.672.991	
-# MIRANDA SERGIO JAVIER             35.634.266
-# NOGUEIRA AKIKI LUCAS ESTEBAN      39.001.387
+# ARANGURI JONATHAN ENRIQUE                  40.672.991	
+# NOGUEIRA AKIKI LUCAS ESTEBAN               39.001.387
+# CASTILLO ABAD AGUSTIN SANTIAGO ALEJANDRO   40.254.434
 
 ################ ENUNCIADO ####################
 

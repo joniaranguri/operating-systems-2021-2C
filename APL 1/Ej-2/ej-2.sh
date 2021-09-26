@@ -116,9 +116,14 @@ changeName(){
 dayToExclude="NULL"
 
 if [ $# -eq 2 -a \( "$1" = "--path" -o "$1" = "-p" \) ];then #VALIDA SI EL USUARIO INGRESA EL PARAMETRO --path O -p
-    if [ -d "$2" -a -r "$2" ];then
-        directory=$2
-        changeName
+    if [ -d "$2" ];then
+        if [ -a -r "$2" ]; then
+            directory=$2
+            changeName
+        else
+            echo "ERROR: No se tienen permisos suficientes en el directorio para ejecutar este programa."
+            exit 1
+        fi
     else
         echo "ERROR: El parametro ingresado no es un directorio."
         exit 1
@@ -126,33 +131,38 @@ if [ $# -eq 2 -a \( "$1" = "--path" -o "$1" = "-p" \) ];then #VALIDA SI EL USUAR
     exit 1
 elif [ $# -eq 4 -a \( "$1" = "--path" -o "$1" = "-p" \) ];then
     if [ -d "$2" ];then
-        directory=$2
-        if [ $# -eq 4 -a \( "$3" = "--dia" -o "$3" = "-d" \) ];then
-            declare -a week_days
-            week_days="lunes martes miercoles jueves viernes sabado domingo"
-            for weekDay in $week_days
-            do
-                if [ "${4,,}" = "${weekDay,,}" ]; then
-                    dayToExclude=$weekDay
-                    changeName
-                    exit 1
-                fi
-                if [ "${4,,}" = "sabado" ]; then
-                    dayToExclude="sábado"
-                    changeName
-                    exit 1
-                fi
-                if [ "${4,,}" = "miercoles" ]; then
-                    dayToExclude="miércoles"
-                    changeName
-                    exit 1
-                fi
-            done
+        if [ -a -r "$2" ]; then
+            directory=$2
+            if [ $# -eq 4 -a \( "$3" = "--dia" -o "$3" = "-d" \) ];then
+                declare -a week_days
+                week_days="lunes martes miercoles jueves viernes sabado domingo"
+                for weekDay in $week_days
+                do
+                    if [ "${4,,}" = "${weekDay,,}" ]; then
+                        dayToExclude=$weekDay
+                        changeName
+                        exit 1
+                    fi
+                    if [ "${4,,}" = "sabado" ]; then
+                        dayToExclude="sábado"
+                        changeName
+                        exit 1
+                    fi
+                    if [ "${4,,}" = "miercoles" ]; then
+                        dayToExclude="miércoles"
+                        changeName
+                        exit 1
+                    fi
+                done
 
-            echo "ERROR: El parametro ingresado no es un día de la semana"
-            exit 1
+                echo "ERROR: El parametro ingresado no es un día de la semana"
+                exit 1
+            else
+                echo "ERROR: No se ingresaron los parametros correctamente. Para más información sobre la ejecución del programa utilice el comando -h ."
+                exit 1
+            fi
         else
-            echo "ERROR: No se ingresaron los parametros correctamente. Para más información sobre la ejecución del programa utilice el comando -h ."
+            echo "ERROR: No se tienen permisos suficientes en el directorio para ejecutar este programa."
             exit 1
         fi
     else

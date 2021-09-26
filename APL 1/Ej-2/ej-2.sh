@@ -137,6 +137,16 @@ elif [ $# -eq 4 -a \( "$1" = "--path" -o "$1" = "-p" \) ];then
                     changeName
                     exit 1
                 fi
+                if [ "${4,,}" = "sabado" ]; then
+                    dayToExclude="sábado"
+                    changeName
+                    exit 1
+                fi
+                if [ "${4,,}" = "miercoles" ]; then
+                    dayToExclude="miércoles"
+                    changeName
+                    exit 1
+                fi
             done
 
             echo "ERROR: El parametro ingresado no es un día de la semana"

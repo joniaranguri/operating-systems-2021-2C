@@ -1,13 +1,13 @@
-0.Persona que regenta una abacería	abacero	
-1.Sentimiento de pena o tristeza que produce la ausencia de la patria o de las personas queridas	nostalgia	
-2.Escrito breve que recuerda o avisa de algo	nota	
-3.Mueble, generalmente de madera, que se compone de una tabla horizontal sostenida por una o varias patas	mesa	
-4.Camarero	mesero	
-5.Puerco, sucio, desaseado	chancho	
-6.Oportunidad u ocasión	chance	
-7.Calzado que no pasa del tobillo, con la parte inferior de suela y lo demás de piel, tela u otro material	zapato	
+Persona que regenta una abacería	abacero	
+Sentimiento de pena o tristeza que produce la ausencia de la patria o de las personas queridas	nostalgia	
+Escrito breve que recuerda o avisa de algo	nota	
+Mueble, generalmente de madera, que se compone de una tabla horizontal sostenida por una o varias patas	mesa	
+Camarero	mesero	
+Puerco, sucio, desaseado	chancho	
+Oportunidad u ocasión	chance	
+Calzado que no pasa del tobillo, con la parte inferior de suela y lo demás de piel, tela u otro material	zapato	
 Que computa o efectúa operaciones matemáticas	computador	
-Nombre común de diversas especies de reptiles escamosos ofidios de cuerpo cilíndrico y alargado, cabeza triangular y con dos dientes retráctiles y huecos en forma de gancho con los que al morder inoculan el veneno que producen en una glándula con la que están conectados	víbora	
+Nombre común de diversas especies de reptiles escamosos ofidios de cuerpo cilíndrico y alargado, cabeza triangular y con dos dientes retráctiles y huecos en forma de gancho con los que al morder inoculan el veneno que producen en una glándula con la que están conectados	vibora	
 Producto que se obtiene de la leche cuajada	queso	
 Que tiene o hace tornasoles	tornasolado	
 Viento impetuoso giratorio, huracán	tornado	
@@ -21,7 +21,7 @@ De la vía o relativo a ella	vial
 Armazón plana de cañas o palos sobre la cual se pega papel o tela y que se lanza al aire para que este la eleve sujeta por un hilo largo	cometa	
 Principio, inicio u origen de una cosa	comienzo	
 Conjunto de cosas que se comen	comida	
-Operación quirúrgica para la esterilización de los varones, consistente en la sección y ligadura de los conductos deferentes por los que salen los espermatozoides del testículo	vasectomía	
+Operación quirúrgica para la esterilización de los varones, consistente en la sección y ligadura de los conductos deferentes por los que salen los espermatozoides del testículo	vasectomia	
 Recipiente pequeño de forma cilíndrica, generalmente de vidrio, usado para beber	vaso	
-Nombre común de diversas especies de mamíferos roedores de pelaje gris, de unos 20 cm, muy fecundos y ágiles, que generalmente viven en las casas o en el campo.	ratón	
+Nombre común de diversas especies de mamíferos roedores de pelaje gris, de unos 20 cm, muy fecundos y ágiles, que generalmente viven en las casas o en el campo.	raton	
 Lugar, generalmente cercado, destinado a enterrar cadáveres.	cementerio	

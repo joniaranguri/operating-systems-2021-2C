@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# APL N1 Ejercicio 2 (Tercera entrega)
+# APL N1 Ejercicio 2 (Cuarta entrega)
 # Script: ej-2.sh
 # Integrantes:
 # ARANGURI JONATHAN ENRIQUE                  40.672.991	

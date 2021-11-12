@@ -1,8 +1,8 @@
 all: buildServidor buildCliente
 buildServidor: 
-	g++ -o servidor servidor.cpp -pthread
+	g++ -g -o servidor servidor.cpp -lpthread 
 buildCliente: 
-	g++ -o cliente cliente.cpp -pthread
+	g++ -g -o cliente cliente.cpp -lpthread 
 clean:
 	rm servidor
 	rm cliente

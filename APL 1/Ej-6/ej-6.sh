@@ -1,11 +1,9 @@
 #!/bin/bash
 
-# APL N1 Ejercicio 6 (Primer entrega)
+# APL N1 Ejercicio 6 (Segunda entrega)
 # Script: ej-6.sh
 # Integrantes:
 # ARANGURI JONATHAN ENRIQUE                  40.672.991	
-# NOGUEIRA AKIKI LUCAS ESTEBAN               39.001.387
-# CASTILLO ABAD AGUSTIN SANTIAGO ALEJANDRO   40.254.434
 
 ################ ENUNCIADO ####################
 
@@ -39,33 +37,27 @@
 
 function suma()
 {
-    # suma=$(( $1 + $2 ))
-    # echo "$1 + $2 = $suma"
-    echo "scale=3; $1+$2" | bc -l
+    awk -v prim=$1 -v seg=$2 'BEGIN{printf "%.4f\n", (prim+seg)}'
 }
 
 function resta()
 {
-    # resta=$(( $1 - $2 ))
-    # echo "$1 - $2 = $resta"
-    echo "scale=3; $1-$2" | bc -l
+      awk -v prim=$1 -v seg=$2 'BEGIN{printf "%.4f\n", (prim-seg)}'
+
 }
 
 function multiplicacion()
 {
-    # multiplicacion=$(( $1 * $2 ))
-    # echo "$1 * $2 = $multiplicacion"
-    echo "scale=3; $1*$2" | bc -l
+    awk -v prim=$1 -v seg=$2 'BEGIN{printf "%.4f\n", (prim*seg)}'
+
 }
 
 function division()
 {
     if [ $(echo "$2 != 0"|bc -l) -eq 1 ]; then
-        # division=$(( $1 / $2 ))
-        # echo "$1 / $2 = $division"
-        echo "scale=3; $1/$2" | bc -l
-    else 
-        echo "Division by 0 is not allowed"
+  awk -v prim=$1 -v seg=$2 'BEGIN{printf "%.4f\n", (prim/seg)}'
+ else 
+       echo "Division by 0 is not allowed"
     fi
 }
 

@@ -1,11 +1,9 @@
 #!/bin/bash
 
-# APL N1 Ejercicio 4 (Primer entrega)
+# APL N1 Ejercicio 4 (Segunda entrega)
 # Script: recopilar.sh
 # Integrantes:
 # ARANGURI JONATHAN ENRIQUE                  40.672.991	
-# NOGUEIRA AKIKI LUCAS ESTEBAN               39.001.387
-# CASTILLO ABAD AGUSTIN SANTIAGO ALEJANDRO   40.254.434
 
 ################ ENUNCIADO ####################
 
@@ -73,12 +71,12 @@ function validateParameters() {
             if [ "$2" !="-d" -a "$4" != "-o" ];then
             wrongParameters
             fi
-            validateDirectories $3 $5
+            validateDirectories "$3" "$5"
     elif [ $1 -eq 6 ]; then
         if [ "$2" !="-d" -a "$4" != "-e" -o "$6" != "-o" ]; then
             wrongParameters
         fi
-        validateDirectories $3 $7
+        validateDirectories "$3" "$7"
     elif [ $1 -eq 1 ]; then
         if [ "$2" != "-h" -a "$2" != "-?" -a "$2" != "-help" ]; then
             wrongParameters
@@ -116,8 +114,10 @@ IFS=$'\n'
 }
 
 function processFile() {
+    isEmptyFile=true
     for line in $(cat "$1" | tail -n +2)
     do
+    isEmptyFile=false
     product=$(echo "$line" | cut -d ',' -f 1)
     quantity=$(echo "$line" | cut -d ',' -f 2)
     re='^[0-9]+$'
@@ -128,19 +128,30 @@ function processFile() {
     lowerCaseProduct=${product,,}
     (( products["${lowerCaseProduct^}"]+=$quantity ))
     done
+    if [ "$isEmptyFile" = true ];then
+    showWarningMessage "The file $1 was empty. Skipping..."
+    fi
 }
 
 function processProducts() {
   line="{"
   sorted=($(sort <<<"${!products[*]}"))
   for item in "${sorted[@]}"; do
-  line+=" ${item}: ${products[$item]},"
+  line+=" \"${item}\": ${products[$item]},"
+    echo "lam"
   done
+if [ $line = "{" ];then
+showError "The file 'salida.json' was not generated because of it is empty"
+else
   line="${line::-1} }"
   echo $line > $1
+  showMessage "The file 'salida.json' was generated successful"
+fi
 }
 
 function validateDirectories() {
+    echo "$1"
+    echo "$2"
     if [[ ! -d "$1" || ! -r "$1" || ! -d "$2" || ! -w "$2" ]]; then
     showError "You do not have permission or the given paths are not directories"
     fi
@@ -191,7 +202,6 @@ function wrongParameters() {
 function main() {
 validateParameters "$#" "$1" "$2" "$3" "$4" "$5" "$6"
 processFiles "$#" "$2" "$4" "$6"
-showMessage "The file 'salida.json' was generated successful"
 }
 
 NC='\033[0m'

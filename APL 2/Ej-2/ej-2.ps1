@@ -1,5 +1,5 @@
-# APL N2 Ejercicio 5 (Primer entrega)
-# Script: ej-5.ps1
+# APL N2 Ejercicio 2 (Segunda entrega)
+# Script: ej-2.ps1
 # Integrantes:
 # ARANGURI JONATHAN ENRIQUE                  40.672.991	
 
@@ -22,11 +22,80 @@ minúsculas o mayúsculas.
 Ejemplo de ejecución:
 • ./script.ps1 -Directorio /home/usuario/fotos-comidas
 • ./script.ps1 -Directorio fotos-comidas -Dia domingo
+
 Criterios de corrección:
-Control Criticidad
-Funciona correctamente según enunciado Obligatorio
-Se validan los parámetros dentro del bloque Param Obligatorio
-El script ofrece ayuda con Get-Help Obligatorio
-Funciona con rutas relativas, absolutas o con espacios Obligatorio
-Se adjuntan archivos de prueba por parte del grupo Obligatorio
-Se implementan funciones Deseable #>
+Control                                                 Criticidad
+Funciona correctamente según enunciado                  Obligatorio
+Se validan los parámetros dentro del bloque Param       Obligatorio
+El script ofrece ayuda con Get-Help                     Obligatorio
+Funciona con rutas relativas, absolutas o con espacios  Obligatorio
+Se adjuntan archivos de prueba por parte del grupo      Obligatorio
+Se implementan funciones                                Deseable 
+#>
+
+<#
+    .SYNOPSIS
+    
+ 	Given a path where is located a set of photos rename it from “yyyyMMdd_HHmmss.jpg”  to : “dd-MM-yyyy (almuerzo|cena) del NombreDia.jpg”
+	 
+    .DESCRIPTION
+    
+ 	Given a path where is located a set of photos rename it from “yyyyMMdd_HHmmss.jpg”  to : “dd-MM-yyyy (almuerzo|cena) del NombreDia.jpg”
+    
+    .EXAMPLE
+       ./ej-2.ps1 -Directorio /home/usuario/fotos-comidas
+       ./ej-2.ps1 -Directorio fotos-comidas -Dia domingo
+
+    .PARAMETER Directorio
+    	The path to the folder which contains the photos to be renamed  
+        
+    .PARAMETER Dia
+    	(Optional) The day of the week you want to exclude from renaming.
+#>
+
+Param
+(
+    [Parameter(Mandatory = $true)] 
+    [ValidateScript( { Test-Path -PathType Container $_ } )]
+    [String] $Directorio,
+    [Parameter(Mandatory = $false)]
+    [ValidateScript({ if(((@('lunes','martes','miercoles','jueves','viernes','sabado','domingo')) -contains $_ )){ $true }else{ throw "$_ is not a day" }})]
+    [String] $Dia
+)
+
+function processDirectory{
+    $validPattern = '.*[0-9]{8}_[0-9]{6}.jpg'
+    $photosToRename = Get-ChildItem -Path $Directorio -Recurse -File | Where-Object {$_ -match $validPattern}
+    
+    foreach($photo in $photosToRename){
+       processPhoto $photo
+    }
+}
+
+function processPhoto{
+    param (
+        [System.IO.FileInfo]$pathToSave
+        )
+    $photoString = [string]$photo
+    $oldName = $photoString.Substring($photoString.Length-19)
+    $dateString = $oldName.Substring(0,15)
+    $realDate = [datetime]::ParseExact($dateString,'yyyyMMdd_HHmmss',$null)
+    $foodName = "almuerzo"
+    $dayOfWeek = $days[$realDate.DayOfWeek.value__]
+    if($dayOfWeek -ne $Dia){
+        if($realDate.Hour -gt 19){
+            $foodName = "cena"
+        }
+        $formatDate = $realDate.ToString("dd-MM-yyyy")
+        $wordsName = "$formatDate $foodName del $dayOfWeek.jpg"
+       $photo| Rename-Item -NewName {  
+           $_.Name -replace '.*[0-9]{8}_[0-9]{6}.jpg', $wordsName
+           }
+           Write-Host "Rename to $wordsName successfully" -ForegroundColor Green
+    } else {
+        Write-Warning "Ignoring $photo..."
+    }
+}
+
+$days = @('domingo','lunes','martes','miercoles','jueves','viernes','sabado')
+processDirectory

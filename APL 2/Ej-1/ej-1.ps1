@@ -16,7 +16,7 @@ $LIST = Get-ChildItem -Path $path -Directory
 # Recorro esa lista de directorios
 $ITEMS = ForEach ($ITEM in $LIST) {
 # Para cada directorio, creo una variable COUNT con la cantidad de "hijos"(directorios y archivos)
- $COUNT = (Get-ChildItem -Path $ITEM).Length
+ $COUNT = (Get-ChildItem -Path $ITEM).count
 # Para cada directorio, creo un hash-table con los valores de el nombre del directorio y la variable count de la linea anterior
  $props = @{
  name = $ITEM

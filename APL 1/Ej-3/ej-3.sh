@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# APL N1 Ejercicio 3 (Primer entrega)
+# APL N1 Ejercicio 3 (Tercera entrega)
 # Script: ej-3.sh
 # Integrantes:
 # ARANGURI JONATHAN ENRIQUE                  40.672.991	
@@ -56,7 +56,7 @@ killDaemon()
 	then 
 		kill $pid
 		echo "Daemon Killed $pid"
-		echo "" > ./.pid_memory
+		rm $pidFile
 	else
 		echo "No daemon found."
 	fi
@@ -64,11 +64,23 @@ killDaemon()
 	exit 1
 }
 
-help()
-{
-	echo "./script.sh --path /home/usuario/fotos-comidas"
-	echo "./script.sh -p fotos-comidas --dia domingo"
+helpFunction() {
+echo "Para la ejecución correcta del programa, debe ingresar los siguientes parametros"
+echo ""
+echo "--path o -p 'directorio' - Para indicar en que directorio desea que los nombres de las fotografias sean editados."
+echo ""
+echo "--dia o -d 'dia de la semana' - Para indicar que los archivos que correspondan a ese día de la semana no sean modificados."
+echo ""
+echo "-help o -h o -? - Para ver este instructivo."
+echo ""
+echo "Ejemplo de ejecucion: ./ej2.sh -p primer carpeta"
+echo "Ejemplo de ejecucion: ./ej2.sh -p primer carpeta -d lunes"
+echo ""
+echo "-k para matar el demonio."
+echo ""
+echo "Ejemplo de ejecucion: ./ej2.sh -k"
 }
+
 
 validateParams()
 {
@@ -94,7 +106,11 @@ validateParams()
 	then
 		echo $response		
 	else 
-		implementDaemon "$@"
+			if [ "$*" != "-h" -a "$*" != "-?" -a "$*" != "-help" ];then
+			implementDaemon "$@"
+			else
+			helpFunction
+			fi
 	fi
 }
 
@@ -103,20 +119,25 @@ implementDaemon()
 	###############################
 	# Magic Daemon Implementation #
 	###############################
-
-	pid=$(<.pid_memory)
-
+	if [ -r $pidFile ]
+	then
+	pid=$(<$pidFile)
+	else
+	touch $pidFile
+	fi
+	pid=$(cat '.pid_memory') &>/dev/null
 	if [ "$pid" == "" ]
 	then
 		doCommands "$@" 0<&- &>/dev/null &
 		echo $! > ./.pid_memory # Saves last executed command PID in a file
 
-		pid=$(<.pid_memory)
+		pid=$(<$pidFile)
 		echo "Daemon Started with pid: $pid"
 	else
 		echo "Only one instance of the daemon is allowed! (Running daemon pid: $pid)"
 	fi
 }
 
+pidFile='.pid_memory'
 validateParams "$@"
 

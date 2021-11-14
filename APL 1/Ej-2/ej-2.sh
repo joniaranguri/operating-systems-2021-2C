@@ -1,11 +1,9 @@
 #!/bin/bash
 
-# APL N1 Ejercicio 2 (Primer entrega)
+# APL N1 Ejercicio 2 (Tercera entrega)
 # Script: ej-2.sh
 # Integrantes:
 # ARANGURI JONATHAN ENRIQUE                  40.672.991	
-# NOGUEIRA AKIKI LUCAS ESTEBAN               39.001.387
-# CASTILLO ABAD AGUSTIN SANTIAGO ALEJANDRO   40.254.434
 
 ################ ENUNCIADO ####################
 
@@ -50,7 +48,7 @@ echo "--path o -p 'directorio' - Para indicar en que directorio desea que los no
 echo ""
 echo "--dia o -d 'dia de la semana' - Para indicar que los archivos que correspondan a ese día de la semana no sean modificados."
 echo ""
-echo "--help o -h - Para ver este instructivo."
+echo "-help o -h o -?  - Para ver este instructivo."
 echo ""
 echo "Ejemplo de ejecucion: ./ej2.sh -p primer carpeta"
 echo "Ejemplo de ejecucion: ./ej2.sh -p primer carpeta -d lunes"
@@ -60,7 +58,7 @@ echo "Ejemplo de ejecucion: ./ej2.sh -p primer carpeta -d lunes"
 validatePath(){
 
     actualFileName="$(basename -- $photo)"
-    ext="${photo#*.}"
+    ext="${photo##*.}"
     dir="$(dirname -- $photo)"
 
     fileName=$actualFileName
@@ -81,7 +79,7 @@ changeName(){
     photos=$(find "$directory" -type f -iname "*.jpg")
     saveIFS=$IFS
     IFS=$'\n'
-
+    successfullFiles=0
     for photo in $photos
     do
         isValidFile=0
@@ -93,9 +91,9 @@ changeName(){
 			newDate="$day-$month-$year"
 
 			dateValue=$year-$month-$day
-			dayName=$(date -d $dateValue +%A)
-
+            DOW=$(date -d $dateValue +%u)
 			hour=$(echo ${actualFileName:9:2})
+            realDayName="${week_days[DOW]}"
 
 			if [ $hour -lt 19 ] 
 			then
@@ -103,37 +101,59 @@ changeName(){
 			else
 				food="cena"
 			fi
-		
-            if [ $dayToExclude != $dayName ];then
-			    mv $photo $dir/$newDate\ $food\ del\ $dayName.$ext
+
+            if [ $dayToExclude != $realDayName ];then
+			    mv $photo $dir/$newDate\ $food\ del\ $realDayName.$ext
+                status=$?
+                if [ $status -eq 0 ];then
+                successfullFiles+=1
+                echo "El archivo $photo se ha renombrado correctamente"
+                else
+                echo "Ha ocurrido un error al renombrar el archivo $photo"
+                fi
             fi
         fi
     done
+if [ $successfullFiles -eq 0 ];then
+echo "No hay archivos para procesar o tienen un formato no soportado"
+exit 1
+fi
+echo "El proceso ha finalizado exitosamente!"
+exit 0
 }
 
 ################# PARAMETROS
 
 dayToExclude="NULL"
-
+declare -a week_days
+week_days=("sabado" "lunes" "martes" "miércoles" "jueves" "viernes" "sábado" "domingo" "miercoles")
 if [ $# -eq 2 -a \( "$1" = "--path" -o "$1" = "-p" \) ];then #VALIDA SI EL USUARIO INGRESA EL PARAMETRO --path O -p
-    if [ -d "$2" -a -r "$2" ];then
+    if [ -d "$2" ];then
+    if [ -r "$2" ];then
         directory=$2
         changeName
+    else
+        "ERROR: El parametro ingresado es un directorio pero no tiene permisos.."
+        exit 1
+    fi
     else
         echo "ERROR: El parametro ingresado no es un directorio."
         exit 1
     fi
-    exit 1
 elif [ $# -eq 4 -a \( "$1" = "--path" -o "$1" = "-p" \) ];then
     if [ -d "$2" ];then
         directory=$2
         if [ $# -eq 4 -a \( "$3" = "--dia" -o "$3" = "-d" \) ];then
-            declare -a week_days
-            week_days="lunes martes miercoles jueves viernes sabado domingo"
-            for weekDay in $week_days
+            for weekDay in ${week_days[@]}
             do
                 if [ "${4,,}" = "${weekDay,,}" ]; then
                     dayToExclude=$weekDay
+                    if [ "$dayToExclude" = "sabado" ];then
+                               dayToExclude="sábado"
+                    fi
+                    if [ "$dayToExclude" = "miercoles" ];then
+                              dayToExclude="miércoles"
+                    fi
                     changeName
                     exit 1
                 fi
@@ -160,7 +180,3 @@ else #SI NO ES --path O --help, SE MUESTRA ERROR, Y HELPFUNCTION PARA GUIAR AL U
     exit 1
 fi
 ##################
-
-
-
-

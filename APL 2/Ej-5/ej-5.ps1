@@ -45,23 +45,18 @@ Se implementan funciones                                    Deseable
 <#
     .SYNOPSIS
     
- 	Given a path of files and a path to generate the output, iterate over the csv files to sum the total amount of the products.  
+ 	Given a path where is located a configurationFile, compress and delete all the files (.log,.txt and .info) specified in the configurationFile
 	 
     .DESCRIPTION
     
- 	Given a path of files and a path to generate the output, iterate over the csv files to sum the total amount of the products.  
+ 	Given a path where is located a configurationFile, compress and delete all the files (.log,.txt and .info) specified in the configurationFile
     
     .EXAMPLE
     
-        Option 1) ./recopilar.ps1 -directorio “PathsCSV” -excluir “Moron” -out “dirSalida”
-        Option 2) ./recopilar.ps1 -directorio “PathsCSV” -out /home/usuario/dirSalida
+        ./ej-5.ps1 -configurationFile tmp/file.conf
 
-    .PARAMETER directorio
-    	The path of the directory which contains the csv files.
-    .PARAMETER excluir 
-    	The Sucursal to exclude from process.
-    .PARAMETER out
-   	    The path used to create de output file.
+    .PARAMETER configurationFile
+    	The path of configurationFile which contains the paths to process
 #>
 
 Param
@@ -74,6 +69,7 @@ Param
 function processConfigFile {
      $pathToSave = Get-Content -Path $configurationFile -TotalCount 1
     if (!(Test-Path $pathToSave -PathType Container)) {
+        Write-Host "$pathToSave not exist. Creating..." -ForegroundColor Yellow
         New-Item -ItemType Directory -Force -Path $pathToSave
     }
     $confFileContent = Get-Content -Path $configurationFile 
@@ -91,8 +87,6 @@ function processDirectory {
     $validExtensions = @('*.log','*.txt','*.info')
     $oldFilesOfDirectory = Get-ChildItem -Path $directoryToProcess -Include $validExtensions -Recurse -File | Where-Object {$_.CreationTime -lt (Get-Date).Date}
 
-
-
     if($oldFilesOfDirectory.Count -gt 0 ){
         $timestamp = Get-Date -Format "yyyyMMddHHmmss" 
         $parentName = (Get-Item $directoryToProcess).parent.Name.ToLower()
@@ -101,6 +95,8 @@ function processDirectory {
 
         $oldFilesOfDirectory | Compress-Archive -Force -DestinationPath $zipFile
         Write-Host "The zip file $zipFile was generated successfully." -ForegroundColor Green
+        Write-Host "Deleting old files in $directoryToProcess ..." -ForegroundColor Yellow
+        $oldFilesOfDirectory | Remove-Item
     }else {
         Write-Warning "The directory $directoryToProcess has no files to compress"
     }   

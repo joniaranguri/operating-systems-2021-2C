@@ -5,7 +5,6 @@
 # Integrantes:
 # ARANGURI JONATHAN ENRIQUE                  40.672.991	
 
-
 ################ ENUNCIADO ####################
 
 # En una empresa se cuenta con un servidor que alberga varios servicios web, los cuales generan
@@ -73,10 +72,12 @@ IFS=$'\n'
     do
     if [[ ! -d "$line" || ! -r "$line" ]]; then   
     showWarningMessage "You do not have permission or "$line" is not a directory .. skipping file .."
+    else
+        createZipFile "$firstLine" "$line"
     fi
-    createZipFile "$firstLine" "$line"
     done
 }
+# date -r tmp/file.conf +%m-%d-%Y
 
 function createZipFile() {
     parentdir="$(dirname "$2")"  
@@ -84,9 +85,9 @@ function createZipFile() {
     baseParentName="$(basename "$parentdir")"
     timestamp=$(date +"%Y%m%d%H%M%S")       
     outputName="$realPath/logs_${baseParentName}_${timestamp}.zip"
-    hrPassed=$(date +%H)
-    LIST_OF_FILES=($(find "$2" -type f ! -ctime -${hrPassed} | egrep -i '.*(\.info|\.txt|\.log)'))
-    $(find "$2" -type f ! -ctime -${hrPassed} | egrep -i '.*(\.info|\.txt|\.log)' | zip "$outputName" -@ &>/dev/null )
+    today=$(date +%Y-%m-%d)
+    LIST_OF_FILES=($(find "$2" -type f ! -newermt $today | egrep -i '.*(\.info|\.txt|\.log)'))
+    $(find "$2" -type f ! -newermt $today | egrep -i '.*(\.info|\.txt|\.log)' | zip "$outputName" -@ &>/dev/null )
     if [ "$?" -eq 0 ]; then
         zipFiles+=("$outputName")
     fi

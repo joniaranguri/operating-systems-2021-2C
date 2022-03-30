@@ -1,11 +1,9 @@
 #!/bin/bash
 
-# APL N1 Ejercicio 5 (Primer entrega)
+# APL N1 Ejercicio 5 (Cuarta entrega)
 # Script: ej-5.sh
 # Integrantes:
 # ARANGURI JONATHAN ENRIQUE                  40.672.991	
-# NOGUEIRA AKIKI LUCAS ESTEBAN               39.001.387
-# CASTILLO ABAD AGUSTIN SANTIAGO ALEJANDRO   40.254.434
 
 ################ ENUNCIADO ####################
 
@@ -48,6 +46,7 @@
 # Se implementan funciones                                                              Deseable
 
 ################ MAIN ####################
+
 function validateParameters() {
     if [ $1 -ne 1 ]; then
         wrongParameters
@@ -73,18 +72,22 @@ IFS=$'\n'
     do
     if [[ ! -d "$line" || ! -r "$line" ]]; then   
     showWarningMessage "You do not have permission or "$line" is not a directory .. skipping file .."
+    else
+        createZipFile "$firstLine" "$line"
     fi
-    createZipFile "$firstLine" "$line"
     done
 }
+# date -r tmp/file.conf +%m-%d-%Y
 
 function createZipFile() {
-    parentdir="$(dirname "$2")"    
+    parentdir="$(dirname "$2")"  
+    realPath=$(realpath $1)  
     baseParentName="$(basename "$parentdir")"
     timestamp=$(date +"%Y%m%d%H%M%S")       
-    outputName="$1/logs_${baseParentName}_${timestamp}.zip"
-    LIST_OF_FILES=($(find "$2" -type f ! -newerBt $(date +"%Y-%m-%d") | egrep -i '.*(\.info|\.txt|\.log)'))
-    $(find "$2" -type f ! -newerBt $(date +"%Y-%m-%d")  | egrep -i '.*(\.info|\.txt|\.log)' | zip "$outputName" -@ &>/dev/null)
+    outputName="$realPath/logs_${baseParentName}_${timestamp}.zip"
+    today=$(date +%Y-%m-%d)
+    LIST_OF_FILES=($(find "$2" -type f ! -newermt $today | egrep -i '.*(\.info|\.txt|\.log)'))
+    $(find "$2" -type f ! -newermt $today | egrep -i '.*(\.info|\.txt|\.log)' | zip "$outputName" -@ &>/dev/null )
     if [ "$?" -eq 0 ]; then
         zipFiles+=("$outputName")
     fi
@@ -95,8 +98,13 @@ function createZipFile() {
 }
 
 function validateDirectory() {
+    if [[ ! -e "$1" ]];then
+    showWarningMessage "$1 does not exist. Creating..."
+    mkdir $1
+    else
     if [[ ! -d "$1" || ! -r "$1" ]]; then
     showError "You do not have permission or "$1" is not a directory"
+    fi
     fi
 }
 
@@ -135,7 +143,7 @@ function wrongParameters() {
 function main() {
     validateParameters "$#" "$1"
     echo  " "
-    showMessage "The process have been finished successfully!"
+    showMessage "The process has been finished successfully!"
     if [ "${#zipFiles[*]}" -eq 0 ]; then
     showMessage "No file has been generated."
     else

@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "__locale": "cpp",
+        "vector": "cpp",
+        "__split_buffer": "cpp",
+        "string": "cpp",
+        "iostream": "cpp",
+        "istream": "cpp",
+        "iosfwd": "cpp",
+        "ostream": "cpp",
+        "algorithm": "cpp",
+        "sstream": "cpp",
+        "chrono": "cpp"
+    }
+}

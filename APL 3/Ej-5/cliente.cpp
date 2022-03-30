@@ -1,4 +1,4 @@
-/*  APL N3 Ejercicio 4 (Segunda entrega)
+/*  APL N3 Ejercicio 5 (Segunda entrega)
     Script: cliente.cpp
     Integrantes:
     ARANGURI JONATHAN ENRIQUE                  40.672.991	
@@ -16,17 +16,16 @@
 #include <string.h>
 #include <iostream>
 #include <sys/mman.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 
 using namespace std;
 sem_t *semaforo;
 int servidorPid;
-#define MEMORIA_RES "MEMORIA_RES_4"
-#define MEMORIA_DEF "MEMORIA_DEF_4"
-#define SEM_LEE_CLIENTE "SEM_LEE_CLIENTE_4"
-#define SEM_LEE_SERVIDOR "SEM_LEE_SERVIDOR_4"
-#define SEM_CLIENTE "SEM_CLIENTE_4"
+#define SEM_CLIENTE "SEM_CLIENTE_5"
 #define USER_SKIP_QUESTION "user_skip_question"
-#define MEMORIA_PID "MEMORIA_PID_4"
 
 void mostrarAyuda()
 {
@@ -35,9 +34,19 @@ void mostrarAyuda()
        << "./cliente" << endl;
 }
 
+int isNumber(char const s[])
+{
+  for (int i = 0; s[i] != '\0'; i++)
+  {
+    if (isdigit(s[i]) == 0)
+      return 0;
+  }
+  return 1;
+}
+
 int validarParametros(int argc, char const *argv[])
 {
-  if (argc > 1)
+  if (argc == 2)
   {
     if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-?") == 0)
     {
@@ -47,9 +56,23 @@ int validarParametros(int argc, char const *argv[])
     {
       printf("\n Cantidad de parametros incorrecta, verifique la ayuda\n");
     }
-    return 1;
   }
-  return 0;
+  else if (argc == 3)
+  {
+    if (!isNumber(argv[2]))
+    {
+      printf("\n El puerto pasado por parámetro no es un número válido\n");
+    }
+    else
+    {
+      return 0;
+    }
+  }
+  else
+  {
+    printf("\n Cantidad de parametros incorrecta, verifique la ayuda\n");
+  }
+  return 1;
 }
 void cerrarRecursos(int signal)
 {
@@ -69,19 +92,9 @@ void reactToSigInt(int signal)
 
   cerrarRecursos(signal);
 }
-
-int isNumber(char const s[])
-{
-  for (int i = 0; s[i] != '\0'; i++)
-  {
-    if (isdigit(s[i]) == 0)
-      return 0;
-  }
-  return 1;
-}
-
 int main(int argc, char const *argv[])
 {
+
   semaforo = sem_open(SEM_CLIENTE, O_CREAT, 0600, 1);
 
   if (sem_trywait(semaforo) != 0)
@@ -96,30 +109,34 @@ int main(int argc, char const *argv[])
 
   signal(SIGINT, reactToSigInt);
 
-  int idMemoriaPid = shm_open(MEMORIA_PID, O_CREAT | O_RDWR, 0600);
-  int idMemoriaDefinicion = shm_open(MEMORIA_DEF, O_CREAT | O_RDWR, 0600);
-  int idMemoriaRespuesta = shm_open(MEMORIA_RES, O_CREAT | O_RDWR, 0600);
-  size_t tamRespuesta = sizeof(char) * 100;
-  size_t tamDefinicion = sizeof(char) * 4096;
-  ftruncate(idMemoriaDefinicion, sizeof(tamDefinicion));
-  ftruncate(idMemoriaRespuesta, sizeof(tamRespuesta));
-  ftruncate(idMemoriaPid, sizeof(int));
-  char *memoriaRes = (char *)mmap(NULL, tamRespuesta,
-                                  PROT_READ | PROT_WRITE, MAP_SHARED, idMemoriaRespuesta, 0);
-  char *memoriaDef = (char *)mmap(NULL, tamDefinicion,
-                                  PROT_READ | PROT_WRITE, MAP_SHARED, idMemoriaDefinicion, 0);
-  int *memoriaPid = (int *)mmap(NULL, sizeof(int),
-                                PROT_WRITE, MAP_SHARED, idMemoriaPid, 0);
-  close(idMemoriaPid);
-  close(idMemoriaDefinicion);
-  close(idMemoriaRespuesta);
-  sem_t *semLeeCliente = sem_open(SEM_LEE_CLIENTE, O_CREAT, 0600, 0);
-  sem_t *semLeeServidor = sem_open(SEM_LEE_SERVIDOR, O_CREAT, 0600, 0);
+  int puerto = atoi(argv[2]);
+  const char *ip = argv[1];
+  int socketComunicacion = socket(AF_INET, SOCK_STREAM, 0);
 
+  struct sockaddr_in socketConfig;
+  memset(&socketConfig, '0', sizeof(socketConfig));
+  socketConfig.sin_family = AF_INET;
+  socketConfig.sin_port = htons(puerto);
+
+  inet_pton(AF_INET, ip, &socketConfig.sin_addr);
+
+  int resultadoConexion = connect(socketComunicacion, (struct sockaddr *)&socketConfig, sizeof(socketConfig));
+
+  if (resultadoConexion < 0)
+  {
+    cout << "Error en la conexión. Verifique si el servidor está corriendo..." << endl;
+
+    cerrarRecursos(0);
+  }
+  char stringPid[10];
+  memset(stringPid, 0, sizeof stringPid);
+  read(socketComunicacion, &stringPid, sizeof(stringPid));
+  servidorPid = atoi(stringPid);
   cout << "Bienvenido al autodefinido" << endl;
   cout << "Ingrese la cantidad de preguntas a realizar:" << endl;
 
   string consulta;
+  char buffer[2000];
   bool isValid = false;
   int sizeOfPartida = 0;
   while (!isValid)
@@ -142,18 +159,15 @@ int main(int argc, char const *argv[])
       cout << "No se ingresó un numero. Intente nuevamente:" << endl;
     }
   }
-
-  strcpy(memoriaRes, &(consulta)[0]);
-
-  servidorPid = *memoriaPid;
+  send(socketComunicacion, &consulta[0], strlen(&consulta[0]), 0);
 
   cout << "Generando definiciones aleatorias. Espere por favor..." << endl;
 
-  sem_post(semLeeServidor);
   for (int i = 0; i < sizeOfPartida; i++)
   {
-    sem_wait(semLeeCliente);
-    cout << memoriaDef << endl;
+    memset(buffer, 0, sizeof buffer);
+    read(socketComunicacion, buffer, 2000);
+    cout << buffer << endl;
 
     string respuesta;
     getline(cin, respuesta);
@@ -161,12 +175,12 @@ int main(int argc, char const *argv[])
     {
       respuesta = USER_SKIP_QUESTION;
     }
-    strcpy(memoriaRes, &(respuesta)[0]);
-    sem_post(semLeeServidor);
+    send(socketComunicacion, &respuesta[0], strlen(&respuesta[0]), 0);
   }
-  sem_wait(semLeeCliente);
+  memset(buffer, 0, sizeof buffer);
+  int valread = read(socketComunicacion, buffer, 2000);
   cout << endl
-       << memoriaDef << endl;
+       << buffer << endl;
   cout << "Fin de la partida" << endl;
   cerrarRecursos(0);
   return 0;

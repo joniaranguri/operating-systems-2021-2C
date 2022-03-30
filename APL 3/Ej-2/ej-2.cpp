@@ -1,4 +1,4 @@
-/*  APL N3 Ejercicio 2 (Primer entrega)
+/*  APL N3 Ejercicio 2 (Segunda entrega)
     Script: ej-2.cpp
     Integrantes:
     ARANGURI JONATHAN ENRIQUE                  40.672.991	
@@ -30,7 +30,7 @@ mutex mtxResults;
 vector<int> results(10, 0);
 char **archivos;
 sem_t *semaforo;
-vector<vector<int>> mat;
+vector<vector<int> > mat;
 int cantFiles = 0;
 
 void mostrarAyuda()
@@ -113,7 +113,8 @@ void doSomething(int id)
 
         mtxResults.lock();
 
-        cout << endl<< "Thread " << id +1 << ": Archivo leído " << pathname << ". Apariciones";
+        cout << endl
+             << "Thread " << id + 1 << ": Archivo leído " << pathname << ". Apariciones";
         for (int i = 0; i < 10; i++)
         {
             cout << "  " << i << "={" << aux[i] << "}";
@@ -125,7 +126,8 @@ void doSomething(int id)
 
 void mostrarResultados()
 {
-    cout << endl<< "Finalizado lectura: Apariciones total" ;
+    cout << endl
+         << "Finalizado lectura: Apariciones total";
 
     for (int i = 0; i < 10; i++)
     {
@@ -133,7 +135,7 @@ void mostrarResultados()
     }
 }
 
-void instanciarHilos(vector<vector<int>> mat)
+void instanciarHilos(vector<vector<int> > mat)
 {
 
     vector<thread> threads;
